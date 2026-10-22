@@ -11,8 +11,12 @@ __pycache__/
 # Local database (holds your own calculation history)
 db.sqlite3
 
-# Secrets and environment variables
+# Secrets - NEVER commit these (.env.example is safe and IS committed)
 .env
+.env.*
+!.env.example
+*.pem
+*.key
 
 # Editor / OS clutter
 .vscode/

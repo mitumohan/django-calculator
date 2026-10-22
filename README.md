@@ -24,12 +24,18 @@ A web calculator built with Django. It evaluates expressions on the server and k
    ```bash
    pip install -r requirements.txt
    ```
-4. Set up the database and start the server:
+4. Create your private settings file and give it a secret key:
+   ```bash
+   cp .env.example .env
+   python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+   ```
+   Paste the generated key into `.env` as the value of `DJANGO_SECRET_KEY`.
+5. Set up the database and start the server:
    ```bash
    python manage.py migrate
    python manage.py runserver
    ```
-5. Open http://127.0.0.1:8000 in your browser.
+6. Open http://127.0.0.1:8000 in your browser.
 
 ## Project structure
 
@@ -37,4 +43,5 @@ A web calculator built with Django. It evaluates expressions on the server and k
 calc/          # the calculator app: views, models, templates, JS and CSS
 calculator/    # Django project settings and URLs
 manage.py      # Django's command-line helper
+.env.example   # template for your private .env file
 ```
