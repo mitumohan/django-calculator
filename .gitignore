@@ -1,0 +1,20 @@
+# Virtual environments (anyone can recreate these with requirements.txt)
+myvenv/
+venv/
+.venv/
+env/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Local database (holds your own calculation history)
+db.sqlite3
+
+# Secrets and environment variables
+.env
+
+# Editor / OS clutter
+.vscode/
+.idea/
+.DS_Store

@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="{% static 'calc/style.css' %}">
+</head>
+<body>
+    <main class="app">
+        <h1>Calculator</h1>
+        <div class="layout">
+            <section class="calculator">
+                <div class="display">
+                    <div id="expression" class="display-expression"></div>
+                    <div id="result" class="display-result">0</div>
+                </div>
+
+                <div class="keys">
+                    <button class="key key-memory" data-action="memory">M</button>
+                    <button class="key key-memory" data-action="memory-clear">MC</button>
+                    <button class="key key-op" data-action="backspace">⌫</button>
+                    <button class="key key-clear" data-action="clear">C</button>
+
+                    <button class="key" data-digit="7">7</button>
+                    <button class="key" data-digit="8">8</button>
+                    <button class="key" data-digit="9">9</button>
+                    <button class="key key-op" data-op="/">÷</button>
+
+                    <button class="key" data-digit="4">4</button>
+                    <button class="key" data-digit="5">5</button>
+                    <button class="key" data-digit="6">6</button>
+                    <button class="key key-op" data-op="*">×</button>
+
+                    <button class="key" data-digit="1">1</button>
+                    <button class="key" data-digit="2">2</button>
+                    <button class="key" data-digit="3">3</button>
+                    <button class="key key-op" data-op="-">−</button>
+
+                    <button class="key key-zero" data-digit="0">0</button>
+                    <button class="key" data-action="decimal">.</button>
+                    <button class="key key-op" data-op="+">+</button>
+
+                    <button class="key key-answer" data-action="answer">ANS</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    {{ history|json_script:"memory-data" }}
+    {% csrf_token %}
+    <script>
+        const CALCULATE_URL = "{% url 'calc:calculate' %}";
+        const CLEAR_MEMORY_URL = "{% url 'calc:clear_memory' %}";
+    </script>
+    <script src="{% static 'calc/calculator.js' %}"></script>
+</body>
+</html>
