@@ -18,15 +18,35 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load secrets from the .env file (which is never committed to git).
+# Optional: settings can be overridden in a .env file (never committed to git).
+# Without one, the defaults below are used.
 load_dotenv(BASE_DIR / '.env')
+
+# Where to keep files that must survive restarts (the database and secret key).
+# The hosting platform provides /data for this; on your computer it's the
+# project folder.
+DATA_DIR = Path('/data') if Path('/data').is_dir() else BASE_DIR
+
+
+def get_secret_key():
+    """Use DJANGO_SECRET_KEY if set. Otherwise create a random key the first
+    time the app starts, save it in secret_key.txt (ignored by git) and reuse
+    it after that, so the key is never written in the code on GitHub."""
+    if os.environ.get('DJANGO_SECRET_KEY'):
+        return os.environ['DJANGO_SECRET_KEY']
+    key_file = DATA_DIR / 'secret_key.txt'
+    if not key_file.exists():
+        from django.core.management.utils import get_random_secret_key
+        key_file.touch(mode=0o600)   # only your user can read it
+        key_file.write_text(get_random_secret_key())
+    return key_file.read_text().strip()
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+SECRET_KEY = get_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
@@ -95,8 +115,8 @@ WSGI_APPLICATION = 'calculator.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        # On a server, set DJANGO_DB_PATH to a folder that survives redeploys.
-        'NAME': os.environ.get('DJANGO_DB_PATH') or BASE_DIR / 'db.sqlite3',
+        # Set DJANGO_DB_PATH to use a different file.
+        'NAME': os.environ.get('DJANGO_DB_PATH') or DATA_DIR / 'db.sqlite3',
     }
 }
 

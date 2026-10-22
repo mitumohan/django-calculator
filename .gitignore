@@ -17,6 +17,7 @@ db.sqlite3
 !.env.example
 *.pem
 *.key
+secret_key.txt
 
 # Editor / OS clutter
 .vscode/
