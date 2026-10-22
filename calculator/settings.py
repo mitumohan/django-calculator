@@ -31,7 +31,14 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+# Web addresses this site may answer to, e.g. "calculator.example.com".
+# Several can be given, separated by commas. Left empty on your own computer,
+# where DEBUG=True allows localhost automatically.
+ALLOWED_HOSTS = [host for host in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',') if host]
+
+# The ANS and MC buttons send POST requests; on HTTPS Django needs to know
+# these addresses are trusted, or it blocks them with "403 CSRF failed".
+CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS]
 
 
 # Application definition
@@ -48,6 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -82,7 +90,8 @@ WSGI_APPLICATION = 'calculator.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        # On a server, set DJANGO_DB_PATH to a folder that survives redeploys.
+        'NAME': os.environ.get('DJANGO_DB_PATH') or BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -122,6 +131,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# runserver stops serving CSS/JS when DEBUG is False, so WhiteNoise does it.
+# Serve straight from each app's static/ folder, because the platform's
+# start command doesn't run collectstatic.
+WHITENOISE_USE_FINDERS = True
 
 
 # Email
