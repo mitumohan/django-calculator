@@ -31,14 +31,19 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-# Web addresses this site may answer to, e.g. "calculator.example.com".
-# Several can be given, separated by commas. Left empty on your own computer,
-# where DEBUG=True allows localhost automatically.
-ALLOWED_HOSTS = [host for host in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',') if host]
+# Web addresses this site may answer to. "*" (the default) means any address.
+# To lock it down, set e.g. "calculator.example.com" (commas between several).
+ALLOWED_HOSTS = [host for host in (os.environ.get('DJANGO_ALLOWED_HOSTS') or '*').split(',') if host]
 
 # The ANS and MC buttons send POST requests; on HTTPS Django needs to know
 # these addresses are trusted, or it blocks them with "403 CSRF failed".
-CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS]
+# "*" can't be used here, so it is skipped.
+CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS if '*' not in host]
+
+# The hosting platform handles HTTPS and passes requests on to Django as plain
+# HTTP, saying "this was HTTPS" in this header. Trusting it lets the CSRF check
+# above pass without listing every address.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
